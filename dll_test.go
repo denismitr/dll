@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDLL_remove(t *testing.T) {
+func TestDLL_Remove(t *testing.T) {
 	t.Run("remove head", func(t *testing.T) {
 		l := dll.New[int]()
 		head := &dll.Element[int]{Data: 1}
@@ -50,7 +50,28 @@ func TestDLL_remove(t *testing.T) {
 	})
 }
 
-func TestDll_sort(t *testing.T) {
+func TestDll_Push(t *testing.T) {
+	t.Run("push remove and check", func(t *testing.T) {
+		l := dll.New[string]()
+
+		foo := dll.NewElement("foo")
+		bar := dll.NewElement("bar")
+		baz := dll.NewElement("baz")
+
+		l.PushTail(foo)
+		l.PushTail(bar)
+
+		assert.Equal(t, 2, l.Len())
+		assert.True(t, l.Remove(bar))
+
+		l.PushHead(baz)
+
+		assert.Equal(t, "baz", l.Head().Data)
+		assert.Equal(t, "foo", l.Tail().Data)
+	})
+}
+
+func TestDll_Sort(t *testing.T) {
 	t.Run("simple reverse", func(t *testing.T) {
 		l := dll.New[int]()
 		l.PushTail(&dll.Element[int]{Data: 4})

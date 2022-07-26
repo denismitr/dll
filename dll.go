@@ -1,9 +1,9 @@
 package dll
 
 type DoublyLinkedList[T any] struct {
-	head   *Element[T]
-	tail   *Element[T]
-	length int
+	head     *Element[T]
+	tail     *Element[T]
+	elements int
 }
 
 func New[T any]() *DoublyLinkedList[T] {
@@ -33,12 +33,26 @@ func (l *DoublyLinkedList[T]) Remove(el *Element[T]) bool {
 	el.prev = nil
 	el.dll = nil
 
-	l.length--
+	l.elements--
 	return true
 }
 
 func (l *DoublyLinkedList[T]) Len() int {
-	return l.length
+	return l.elements
+}
+
+func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
+	if l.head == nil {
+		l.head = el
+		l.tail = el
+	} else {
+		oldHead := l.head
+		el.next = oldHead
+		oldHead.prev = el
+		l.head = el
+	}
+	l.elements++
+	el.dll = l
 }
 
 func (l *DoublyLinkedList[T]) PushTail(el *Element[T]) {
@@ -52,7 +66,7 @@ func (l *DoublyLinkedList[T]) PushTail(el *Element[T]) {
 		l.tail = el
 		el.next = nil
 	}
-	l.length++
+	l.elements++
 	el.dll = l
 }
 

@@ -7,6 +7,10 @@ type Element[T any] struct {
 	dll  *DoublyLinkedList[T]
 }
 
+func NewElement[T any](data T) *Element[T] {
+	return &Element[T]{Data: data}
+}
+
 func (el *Element[T]) Next() *Element[T] {
 	return el.next
 }
