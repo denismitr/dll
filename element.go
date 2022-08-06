@@ -1,14 +1,14 @@
 package dll
 
 type Element[T any] struct {
-	Data T
+	data T
 	next *Element[T]
 	prev *Element[T]
 	dll  *DoublyLinkedList[T]
 }
 
 func NewElement[T any](data T) *Element[T] {
-	return &Element[T]{Data: data}
+	return &Element[T]{data: data}
 }
 
 func (el *Element[T]) Next() *Element[T] {
@@ -20,5 +20,5 @@ func (el *Element[T]) Prev() *Element[T] {
 }
 
 func (el *Element[T]) Value() T {
-	return el.Data
+	return el.data
 }

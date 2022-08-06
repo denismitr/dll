@@ -11,42 +11,42 @@ import (
 func TestDLL_Remove(t *testing.T) {
 	t.Run("remove head", func(t *testing.T) {
 		l := dll.New[int]()
-		head := &dll.Element[int]{Data: 1}
+		head := dll.NewElement(1)
 		l.PushTail(head)
 
-		l.PushTail(&dll.Element[int]{Data: 2})
-		l.PushTail(&dll.Element[int]{Data: 3})
-		l.PushTail(&dll.Element[int]{Data: 4})
+		l.PushTail(dll.NewElement(2))
+		l.PushTail(dll.NewElement(3))
+		l.PushTail(dll.NewElement(4))
 
-		tail := &dll.Element[int]{Data: 5}
+		tail := dll.NewElement(5)
 		l.PushTail(tail)
 
-		assert.Equal(t, 5, l.Tail().Data)
-		assert.Equal(t, 1, l.Head().Data)
+		assert.Equal(t, 5, l.Tail().Value())
+		assert.Equal(t, 1, l.Head().Value())
 
 		l.Remove(head)
 
 		assert.Equal(t, 4, l.Len())
-		assert.Equal(t, 2, l.Head().Data)
+		assert.Equal(t, 2, l.Head().Value())
 	})
 
 	t.Run("remove tail", func(t *testing.T) {
 		l := dll.New[int]()
-		head := &dll.Element[int]{Data: 1}
+		head := dll.NewElement(1)
 
 		l.PushTail(head)
-		l.PushTail(&dll.Element[int]{Data: 2})
-		l.PushTail(&dll.Element[int]{Data: 3})
-		l.PushTail(&dll.Element[int]{Data: 4})
+		l.PushTail(dll.NewElement(2))
+		l.PushTail(dll.NewElement(3))
+		l.PushTail(dll.NewElement(4))
 
-		tail := &dll.Element[int]{Data: 5}
+		tail := dll.NewElement(5)
 		l.PushTail(tail)
 
 		l.Remove(tail)
 
 		assert.Equal(t, 4, l.Len())
-		assert.Equal(t, 4, l.Tail().Data)
-		assert.Equal(t, 1, l.Head().Data)
+		assert.Equal(t, 4, l.Tail().Value())
+		assert.Equal(t, 1, l.Head().Value())
 	})
 }
 
@@ -66,8 +66,8 @@ func TestDll_Push(t *testing.T) {
 
 		l.PushHead(baz)
 
-		assert.Equal(t, "baz", l.Head().Data)
-		assert.Equal(t, "foo", l.Tail().Data)
+		assert.Equal(t, "baz", l.Head().Value())
+		assert.Equal(t, "foo", l.Tail().Value())
 	})
 }
 
@@ -91,11 +91,11 @@ func TestDll_Sort(t *testing.T) {
 		require.NotNil(t, l.Tail().Prev())
 		require.NotNil(t, l.Tail().Prev().Prev())
 
-		require.Equal(t, 1, l.Head().Data)
-		require.Equal(t, 2, l.Head().Next().Data)
-		require.Equal(t, 3, l.Head().Next().Next().Data)
-		require.Equal(t, 5, l.Tail().Data)
-		require.Equal(t, 4, l.Tail().Prev().Data)
+		require.Equal(t, 1, l.Head().Value())
+		require.Equal(t, 2, l.Head().Next().Value())
+		require.Equal(t, 3, l.Head().Next().Next().Value())
+		require.Equal(t, 5, l.Tail().Value())
+		require.Equal(t, 4, l.Tail().Prev().Value())
 	})
 
 	t.Run("reverse long sequence of integers", func(t *testing.T) {

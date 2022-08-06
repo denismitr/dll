@@ -169,7 +169,7 @@ func merge[T any](
 	}
 
 	// pick the smallest key
-	if comparator(left.Data, right.Data) {
+	if comparator(left.data, right.data) {
 		next, tail := merge(left.next, leftTail, right, rightTail, comparator)
 		left.next = next
 		left.next.prev = left
