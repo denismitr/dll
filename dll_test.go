@@ -98,3 +98,38 @@ func TestDll_Sort(t *testing.T) {
 		require.Equal(t, 4, l.Tail().Prev().Data)
 	})
 }
+
+func TestDLL_Reverse(t *testing.T) {
+	t.Run("reverse sequence of integers", func(t *testing.T) {
+		l := dll.New[int]()
+		for i := 0; i < 1_000; i++ {
+			l.PushTail(dll.NewElement(i))
+		}
+
+		// befor reverse
+		assert.Equal(t, 0, l.Head().Value())
+		assert.Equal(t, 999, l.Tail().Value())
+
+		l.Reverse()
+
+		// after reverse
+		assert.Equal(t, 999, l.Head().Value())
+		assert.Equal(t, 0, l.Tail().Value())
+
+		// check each element from head to tail after reverse
+		curr := l.Head()
+		for i := 999; i >= 0; i-- {
+			require.NotNil(t, curr)
+			assert.Equal(t, i, curr.Value())
+			curr = curr.Next()
+		}
+
+		// check each element from tail to head after reverse
+		curr = l.Tail()
+		for i := 0; i < 1_000; i++ {
+			require.NotNil(t, curr)
+			assert.Equal(t, i, curr.Value())
+			curr = curr.Prev()
+		}
+	})
+}

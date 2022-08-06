@@ -10,6 +10,25 @@ func New[T any]() *DoublyLinkedList[T] {
 	return &DoublyLinkedList[T]{}
 }
 
+func (l *DoublyLinkedList[T]) Reverse() {
+	var temp *Element[T]
+	curr := l.head
+	tailTemp := l.head
+
+	for curr != nil {
+		temp = curr.prev
+		curr.prev = curr.next
+		curr.next = temp
+		curr = curr.prev
+	}
+
+	if temp != nil {
+		l.head = temp.prev
+	}
+
+	l.tail = tailTemp
+}
+
 func (l *DoublyLinkedList[T]) Remove(el *Element[T]) bool {
 	if el.dll != l {
 		return false

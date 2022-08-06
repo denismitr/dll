@@ -18,3 +18,7 @@ func (el *Element[T]) Next() *Element[T] {
 func (el *Element[T]) Prev() *Element[T] {
 	return el.prev
 }
+
+func (el *Element[T]) Value() T {
+	return el.Data
+}
