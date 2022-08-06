@@ -74,11 +74,11 @@ func TestDll_Push(t *testing.T) {
 func TestDll_Sort(t *testing.T) {
 	t.Run("simple reverse", func(t *testing.T) {
 		l := dll.New[int]()
-		l.PushTail(&dll.Element[int]{Data: 4})
-		l.PushTail(&dll.Element[int]{Data: 3})
-		l.PushTail(&dll.Element[int]{Data: 2})
-		l.PushTail(&dll.Element[int]{Data: 5})
-		l.PushTail(&dll.Element[int]{Data: 1})
+		l.PushTail(dll.NewElement(4))
+		l.PushTail(dll.NewElement(3))
+		l.PushTail(dll.NewElement(2))
+		l.PushTail(dll.NewElement(5))
+		l.PushTail(dll.NewElement(1))
 
 		comparator := func(a int, b int) bool { return a < b }
 		l.Sort(comparator)
@@ -96,6 +96,30 @@ func TestDll_Sort(t *testing.T) {
 		require.Equal(t, 3, l.Head().Next().Next().Data)
 		require.Equal(t, 5, l.Tail().Data)
 		require.Equal(t, 4, l.Tail().Prev().Data)
+	})
+
+	t.Run("reverse long sequence of integers", func(t *testing.T) {
+		l := dll.New[int]()
+		for i := 100_000; i > 0; i-- {
+			l.PushHead(dll.NewElement(i))
+		}
+
+		// simple check befor sort
+		assert.Equal(t, 1, l.Head().Value())
+		assert.Equal(t, 100_000, l.Tail().Value())
+
+		l.Sort(func(a int, b int) bool { return a > b })
+
+		// simple check after sort
+		assert.Equal(t, 100_000, l.Head().Value())
+		assert.Equal(t, 1, l.Tail().Value())
+
+		curr := l.Head()
+		for i := 100_000; i > 0; i-- {
+			require.NotNil(t, curr)
+			assert.Equal(t, i, curr.Value())
+			curr = curr.Next()
+		}
 	})
 }
 
