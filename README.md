@@ -20,7 +20,8 @@ l.Head() // baz
 l.Tail() // foo
 ```
 
-### Extra Features
+### Characteristics
 - Sorting with merge sort O(n log n)
 - Remove O(1)
-- Add O(1)
+- Add (from head or tail) O(1)
+- Reverse O(n)
