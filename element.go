@@ -22,3 +22,7 @@ func (el *Element[T]) Prev() *Element[T] {
 func (el *Element[T]) Value() T {
 	return el.data
 }
+
+func (el *Element[T]) ReplaceValue(value T) {
+	el.data = value
+}
