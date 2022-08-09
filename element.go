@@ -15,6 +15,14 @@ func (el *Element[T]) Next() *Element[T] {
 	return el.next
 }
 
+func (el *Element[T]) HasNext() bool {
+	return el.next != nil
+}
+
+func (el *Element[T]) HasPrev() bool {
+	return el.prev != nil
+}
+
 func (el *Element[T]) Prev() *Element[T] {
 	return el.prev
 }
