@@ -1,10 +1,18 @@
 package dll
 
+import "errors"
+
+var (
+	ErrNoLessFuncSet     = errors.New("sorting is impossible: no less func set: hint call SortAndPreserveOrderOnInsert")
+	ErrInconsistentState = errors.New("doubly linked list is in inconsistent state")
+)
+
 type DoublyLinkedList[T any] struct {
 	head     *Element[T]
 	tail     *Element[T]
 	elements int
 	sorted   bool
+	lessFn   LessFn[T]
 }
 
 // New doubly linked list
@@ -30,6 +38,13 @@ func (l *DoublyLinkedList[T]) Reverse() {
 	}
 
 	l.tail = tailTemp
+	l.sorted = false
+}
+
+func (l *DoublyLinkedList[T]) SortAndPreserveOrderOnInsert(comparator LessFn[T]) {
+	l.sorted = false
+	l.Sort(comparator)
+	l.lessFn = comparator
 }
 
 // Remove element from doubly linked list and set all its's links to nil
@@ -86,7 +101,11 @@ func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
 	}
 }
 
-func (l *DoublyLinkedList[T]) InsertWithSort(el *Element[T], comparator CompareFn[T]) {
+func (l *DoublyLinkedList[T]) InsertWithSort(el *Element[T]) error {
+	if l.lessFn == nil {
+		return ErrNoLessFuncSet
+	}
+
 	// ensure correctness
 	el.next = nil
 	el.prev = nil
@@ -94,23 +113,23 @@ func (l *DoublyLinkedList[T]) InsertWithSort(el *Element[T], comparator CompareF
 	if l.head == nil {
 		l.PushHead(el)
 		l.sorted = true // PushHead sets sorted to false
-		return
+		return nil
 	}
 
 	if !l.sorted {
-		l.Sort(comparator)
+		l.Sort(l.lessFn)
 	}
 
 	// if tail is less than inserted element insert to tail
-	if l.tail != nil && comparator(l.tail.data, el.data) {
+	if l.tail != nil && l.lessFn(l.tail.data, el.data) {
 		l.PushTail(el) // PushTail sets sorted to false
 		l.sorted = true
-		return
+		return nil
 	}
 
 	curr := l.head
 	// 10 next nil -> false
-	for curr != nil && comparator(curr.data, el.data) {
+	for curr != nil && l.lessFn(curr.data, el.data) {
 		curr = curr.Next()
 	}
 
@@ -130,9 +149,9 @@ func (l *DoublyLinkedList[T]) InsertWithSort(el *Element[T], comparator CompareF
 
 		el.dll = l
 		l.elements++
-	} else {
-		panic("how????")
 	}
+
+	return nil
 }
 
 // PushHead - pushes element to the tail of the doubly linked list
@@ -167,20 +186,20 @@ func (l *DoublyLinkedList[T]) Tail() *Element[T] {
 	return l.tail
 }
 
-// CompareFn - compares a and b of type T and returns boolean
+// LessFn - compares a and b of type T and returns boolean
 // indicating weather a is less than b
-type CompareFn[T any] func(a T, b T) (less bool)
+type LessFn[T any] func(a T, b T) (less bool)
 
 // Sort the doubly linked list using the comparator function
-func (l *DoublyLinkedList[T]) Sort(comparator CompareFn[T]) {
-	l.head, l.tail = mergeSort(l.head, l.tail, comparator)
+func (l *DoublyLinkedList[T]) Sort(lessFn LessFn[T]) {
+	l.head, l.tail = mergeSort(l.head, l.tail, lessFn)
 	l.sorted = true
 }
 
 func mergeSort[T any](
 	head *Element[T],
 	tail *Element[T],
-	comparator CompareFn[T],
+	comparator LessFn[T],
 ) (newHead *Element[T], newTail *Element[T]) {
 	if head == nil || head == tail || head.next == nil {
 		return head, tail
@@ -232,7 +251,7 @@ func merge[T any](
 	leftTail *Element[T],
 	right *Element[T],
 	rightTail *Element[T],
-	comparator CompareFn[T],
+	comparator LessFn[T],
 ) (*Element[T], *Element[T]) {
 	if left == nil {
 		return right, rightTail
