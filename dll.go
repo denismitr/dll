@@ -118,7 +118,13 @@ func (l *DoublyLinkedList[T]) InsertWithSort(el *Element[T], comparator CompareF
 	if curr != nil {
 		next := curr
 		prev := curr.prev
-		prev.next = el
+
+		if prev != nil {
+			prev.next = el
+		} else {
+			l.head = el
+		}
+
 		el.prev = prev
 		el.next = next
 
