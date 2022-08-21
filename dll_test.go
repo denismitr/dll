@@ -157,3 +157,39 @@ func TestDLL_Reverse(t *testing.T) {
 		}
 	})
 }
+
+func TestDLL_InsertWithSort(t *testing.T) {
+	t.Run("insert into the middle", func(t *testing.T) {
+		l := dll.New[int]()
+
+		l.PushHead(dll.NewElement(10))
+		l.PushHead(dll.NewElement(8))
+		l.PushHead(dll.NewElement(3))
+		l.PushHead(dll.NewElement(1))
+		l.PushHead(dll.NewElement(2))
+		l.PushHead(dll.NewElement(4))
+		l.PushHead(dll.NewElement(6))
+		l.PushHead(dll.NewElement(7))
+
+		require.Equal(t, 8, l.Len())
+
+		lessFn := func(a int, b int) bool { return a < b }
+
+		l.InsertWithSort(dll.NewElement(5), lessFn)
+		require.Equal(t, 9, l.Len())
+		l.InsertWithSort(dll.NewElement(9), lessFn)
+		require.Equal(t, 10, l.Len())
+		l.InsertWithSort(dll.NewElement(11), lessFn)
+		require.Equal(t, 11, l.Len())
+		l.InsertWithSort(dll.NewElement(12), lessFn)
+		require.Equal(t, 12, l.Len())
+
+		exp := 1
+		for curr := l.Head(); curr.HasNext(); curr = curr.Next() {
+			assert.Equal(t, exp, curr.Value())
+			exp++
+		}
+
+		assert.Equal(t, 12, exp)
+	})
+}
