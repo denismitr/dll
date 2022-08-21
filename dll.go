@@ -4,6 +4,7 @@ type DoublyLinkedList[T any] struct {
 	head     *Element[T]
 	tail     *Element[T]
 	elements int
+	sorted   bool
 }
 
 // New doubly linked list
@@ -66,6 +67,14 @@ func (l *DoublyLinkedList[T]) Len() int {
 
 // PushHead - pushes element to the head of the doubly linked list
 func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
+	// ensure correctness
+	el.next = nil
+	el.prev = nil
+
+	l.elements++
+	el.dll = l
+	l.sorted = false
+
 	if l.head == nil {
 		l.head = el
 		l.tail = el
@@ -75,14 +84,62 @@ func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
 		oldHead.prev = el
 		l.head = el
 	}
-	l.elements++
-	el.dll = l
+}
+
+func (l *DoublyLinkedList[T]) InsertWithSort(el *Element[T], comparator CompareFn[T]) {
+	// ensure correctness
+	el.next = nil
+	el.prev = nil
+
+	if l.head == nil {
+		l.PushHead(el)
+		l.sorted = true // PushHead sets sorted to false
+		return
+	}
+
+	if !l.sorted {
+		l.Sort(comparator)
+	}
+
+	// if tail is less than inserted element insert to tail
+	if l.tail != nil && comparator(l.tail.data, el.data) {
+		l.PushTail(el) // PushTail sets sorted to false
+		l.sorted = true
+		return
+	}
+
+	curr := l.head
+	// 10 next nil -> false
+	for curr != nil && comparator(curr.data, el.data) {
+		curr = curr.Next()
+	}
+
+	// we absolutely should have found existing element that is less than inserted one
+	if curr != nil {
+		next := curr
+		prev := curr.prev
+
+		if prev != nil {
+			prev.next = el
+		} else {
+			l.head = el
+		}
+
+		el.prev = prev
+		el.next = next
+
+		el.dll = l
+		l.elements++
+	} else {
+		panic("how????")
+	}
 }
 
 // PushHead - pushes element to the tail of the doubly linked list
 func (l *DoublyLinkedList[T]) PushTail(el *Element[T]) {
 	l.elements++
 	el.dll = l
+	l.sorted = false
 
 	// ensure correctness
 	el.next = nil
@@ -117,6 +174,7 @@ type CompareFn[T any] func(a T, b T) (less bool)
 // Sort the doubly linked list using the comparator function
 func (l *DoublyLinkedList[T]) Sort(comparator CompareFn[T]) {
 	l.head, l.tail = mergeSort(l.head, l.tail, comparator)
+	l.sorted = true
 }
 
 func mergeSort[T any](
