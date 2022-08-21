@@ -6,10 +6,12 @@ type DoublyLinkedList[T any] struct {
 	elements int
 }
 
+// New doubly linked list
 func New[T any]() *DoublyLinkedList[T] {
 	return &DoublyLinkedList[T]{}
 }
 
+// Reverese the doubly linked list
 func (l *DoublyLinkedList[T]) Reverse() {
 	var temp *Element[T]
 	curr := l.head
@@ -29,6 +31,7 @@ func (l *DoublyLinkedList[T]) Reverse() {
 	l.tail = tailTemp
 }
 
+// Remove element from doubly linked list and set all its's links to nil
 func (l *DoublyLinkedList[T]) Remove(el *Element[T]) bool {
 	if el.dll != l {
 		return false
@@ -56,10 +59,12 @@ func (l *DoublyLinkedList[T]) Remove(el *Element[T]) bool {
 	return true
 }
 
+// Len returns the length of the doubly linked list
 func (l *DoublyLinkedList[T]) Len() int {
 	return l.elements
 }
 
+// PushHead - pushes element to the head of the doubly linked list
 func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
 	if l.head == nil {
 		l.head = el
@@ -74,7 +79,15 @@ func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
 	el.dll = l
 }
 
+// PushHead - pushes element to the tail of the doubly linked list
 func (l *DoublyLinkedList[T]) PushTail(el *Element[T]) {
+	l.elements++
+	el.dll = l
+
+	// ensure correctness
+	el.next = nil
+	el.prev = nil
+
 	if l.head == nil {
 		l.head = el
 		l.tail = el
@@ -85,20 +98,23 @@ func (l *DoublyLinkedList[T]) PushTail(el *Element[T]) {
 		l.tail = el
 		el.next = nil
 	}
-	l.elements++
-	el.dll = l
 }
 
+// Head - returns the head of the doubly linked list
 func (l *DoublyLinkedList[T]) Head() *Element[T] {
 	return l.head
 }
 
+// Tail - returns the tail of the doubly linked list
 func (l *DoublyLinkedList[T]) Tail() *Element[T] {
 	return l.tail
 }
 
-type CompareFn[T any] func(T, T) bool
+// CompareFn - compares a and b of type T and returns boolean
+// indicating weather a is less than b
+type CompareFn[T any] func(a T, b T) (less bool)
 
+// Sort the doubly linked list using the comparator function
 func (l *DoublyLinkedList[T]) Sort(comparator CompareFn[T]) {
 	l.head, l.tail = mergeSort(l.head, l.tail, comparator)
 }
