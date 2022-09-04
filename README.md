@@ -49,4 +49,3 @@ l.Tail().Value() // 4
 - Remove O(1)
 - PushHead and PushTail O(1)
 - Reverse O(n)
-- Insert with preserving the sort order O(n) when already sorted and O(n*log n) when not yet sorted

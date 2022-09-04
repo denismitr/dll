@@ -11,7 +11,6 @@ type DoublyLinkedList[T any] struct {
 	head     *Element[T]
 	tail     *Element[T]
 	elements int
-	sorted   bool
 	lessFn   LessFn[T]
 }
 
@@ -38,13 +37,6 @@ func (l *DoublyLinkedList[T]) Reverse() {
 	}
 
 	l.tail = tailTemp
-	l.sorted = false
-}
-
-func (l *DoublyLinkedList[T]) SortAndPreserveOrderOnInsert(comparator LessFn[T]) {
-	l.sorted = false
-	l.Sort(comparator)
-	l.lessFn = comparator
 }
 
 // Remove element from doubly linked list and set all its's links to nil
@@ -88,7 +80,6 @@ func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
 
 	l.elements++
 	el.dll = l
-	l.sorted = false
 
 	if l.head == nil {
 		l.head = el
@@ -101,64 +92,10 @@ func (l *DoublyLinkedList[T]) PushHead(el *Element[T]) {
 	}
 }
 
-func (l *DoublyLinkedList[T]) InsertWithSort(el *Element[T]) error {
-	if l.lessFn == nil {
-		return ErrNoLessFuncSet
-	}
-
-	// ensure correctness
-	el.next = nil
-	el.prev = nil
-
-	if l.head == nil {
-		l.PushHead(el)
-		l.sorted = true // PushHead sets sorted to false
-		return nil
-	}
-
-	if !l.sorted {
-		l.Sort(l.lessFn)
-	}
-
-	// if tail is less than inserted element insert to tail
-	if l.tail != nil && l.lessFn(l.tail.data, el.data) {
-		l.PushTail(el) // PushTail sets sorted to false
-		l.sorted = true
-		return nil
-	}
-
-	curr := l.head
-	// 10 next nil -> false
-	for curr != nil && l.lessFn(curr.data, el.data) {
-		curr = curr.Next()
-	}
-
-	// we absolutely should have found existing element that is less than inserted one
-	if curr != nil {
-		next := curr
-		prev := curr.prev
-
-		if prev != nil {
-			prev.next = el
-		} else {
-			l.head = el
-		}
-
-		el.prev = prev
-		el.next = next
-
-		el.dll = l
-		l.elements++
-	}
-
-	return nil
-}
-
 // PushHead - pushes element to the tail of the doubly linked list
 func (l *DoublyLinkedList[T]) PushTail(el *Element[T]) {
 	l.elements++
 	el.dll = l
-	l.sorted = false
 
 	// ensure correctness
 	el.next = nil
@@ -193,7 +130,6 @@ type LessFn[T any] func(a T, b T) (less bool)
 // Sort the doubly linked list using the comparator function
 func (l *DoublyLinkedList[T]) Sort(lessFn LessFn[T]) {
 	l.head, l.tail = mergeSort(l.head, l.tail, lessFn)
-	l.sorted = true
 }
 
 func mergeSort[T any](
