@@ -72,7 +72,7 @@ func TestDll_Push(t *testing.T) {
 }
 
 func TestDll_Sort(t *testing.T) {
-	t.Run("simple reverse", func(t *testing.T) {
+	t.Run("simple sort", func(t *testing.T) {
 		l := dll.New[int]()
 		l.PushTail(dll.NewElement(4))
 		l.PushTail(dll.NewElement(3))
@@ -80,8 +80,8 @@ func TestDll_Sort(t *testing.T) {
 		l.PushTail(dll.NewElement(5))
 		l.PushTail(dll.NewElement(1))
 
-		comparator := func(a int, b int) bool { return a < b }
-		l.Sort(comparator)
+		lessFn := func(a int, b int) bool { return a < b }
+		l.Sort(lessFn)
 
 		require.NotNil(t, l.Head())
 		require.NotNil(t, l.Tail())
@@ -158,8 +158,8 @@ func TestDLL_Reverse(t *testing.T) {
 	})
 }
 
-func TestDLL_InsertWithSort(t *testing.T) {
-	t.Run("insert multiple elements", func(t *testing.T) {
+func TestDLL_Sort(t *testing.T) {
+	t.Run("sort small number of values", func(t *testing.T) {
 		l := dll.New[int]()
 
 		l.PushHead(dll.NewElement(10))
@@ -167,22 +167,16 @@ func TestDLL_InsertWithSort(t *testing.T) {
 		l.PushHead(dll.NewElement(3))
 		l.PushHead(dll.NewElement(1))
 		l.PushHead(dll.NewElement(2))
+		l.PushHead(dll.NewElement(5))
+		l.PushHead(dll.NewElement(9))
 		l.PushHead(dll.NewElement(4))
 		l.PushHead(dll.NewElement(6))
 		l.PushHead(dll.NewElement(7))
 
-		require.Equal(t, 8, l.Len())
+		require.Equal(t, 10, l.Len())
 
 		lessFn := func(a int, b int) bool { return a < b }
-
-		l.InsertWithSort(dll.NewElement(5), lessFn)
-		require.Equal(t, 9, l.Len())
-		l.InsertWithSort(dll.NewElement(9), lessFn)
-		require.Equal(t, 10, l.Len())
-		l.InsertWithSort(dll.NewElement(11), lessFn)
-		require.Equal(t, 11, l.Len())
-		l.InsertWithSort(dll.NewElement(12), lessFn)
-		require.Equal(t, 12, l.Len())
+		l.Sort(lessFn)
 
 		exp := 1
 		for curr := l.Head(); curr.HasNext(); curr = curr.Next() {
@@ -190,54 +184,8 @@ func TestDLL_InsertWithSort(t *testing.T) {
 			exp++
 		}
 
-		assert.Equal(t, 12, exp)
-		assert.Equal(t, 12, l.Tail().Value())
+		assert.Equal(t, 10, exp)
+		assert.Equal(t, 10, l.Tail().Value())
 		assert.Equal(t, 1, l.Head().Value())
-	})
-
-	t.Run("insert multiple elements", func(t *testing.T) {
-		l := dll.New[int]()
-
-		l.PushHead(dll.NewElement(10))
-		l.PushHead(dll.NewElement(8))
-		l.PushHead(dll.NewElement(3))
-		l.PushHead(dll.NewElement(1))
-		l.PushHead(dll.NewElement(2))
-		l.PushHead(dll.NewElement(4))
-		l.PushHead(dll.NewElement(6))
-		l.PushHead(dll.NewElement(7))
-
-		require.Equal(t, 8, l.Len())
-
-		greaterFn := func(a int, b int) bool { return a > b }
-
-		l.InsertWithSort(dll.NewElement(5), greaterFn)
-		require.Equal(t, 9, l.Len())
-		l.InsertWithSort(dll.NewElement(9), greaterFn)
-		require.Equal(t, 10, l.Len())
-		l.InsertWithSort(dll.NewElement(11), greaterFn)
-		require.Equal(t, 11, l.Len())
-		l.InsertWithSort(dll.NewElement(12), greaterFn)
-		require.Equal(t, 12, l.Len())
-
-		exp := 12
-		for curr := l.Head(); curr.HasNext(); curr = curr.Next() {
-			assert.Equal(t, exp, curr.Value())
-			exp--
-		}
-
-		assert.Equal(t, 1, exp)
-		assert.Equal(t, 12, l.Head().Value())
-		assert.Equal(t, 1, l.Tail().Value())
-	})
-
-	t.Run("insert as the only element with less func", func(t *testing.T) {
-		l := dll.New[int]()
-		lessFn := func(a int, b int) bool { return a < b }
-		l.InsertWithSort(dll.NewElement(2), lessFn)
-
-		require.Equal(t, 1, l.Len())
-		assert.Equal(t, 2, l.Head().Value())
-		assert.Equal(t, 2, l.Tail().Value())
 	})
 }
