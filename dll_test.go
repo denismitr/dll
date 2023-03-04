@@ -48,6 +48,27 @@ func TestDLL_Remove(t *testing.T) {
 		assert.Equal(t, 4, l.Tail().Value())
 		assert.Equal(t, 1, l.Head().Value())
 	})
+
+	t.Run("remove in the middle", func(t *testing.T) {
+		l := dll.New[int]()
+		head := dll.NewElement(1)
+
+		l.PushTail(head)
+		l.PushTail(dll.NewElement(2))
+		el3 := dll.NewElement(3)
+		l.PushTail(el3)
+		l.PushTail(dll.NewElement(4))
+
+		tail := dll.NewElement(5)
+		l.PushTail(tail)
+
+		l.Remove(el3)
+
+		assert.Equal(t, 4, l.Len())
+		assert.Equal(t, 5, l.Tail().Value())
+		assert.Equal(t, 4, l.Tail().Prev().Value())
+		assert.Equal(t, 1, l.Head().Value())
+	})
 }
 
 func TestDll_Push(t *testing.T) {

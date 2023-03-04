@@ -55,7 +55,9 @@ func (l *DoublyLinkedList[T]) Remove(el *Element[T]) bool {
 	// is tail
 	if el.next == nil {
 		l.tail = el.prev
-	} else if el.prev != nil {
+	}
+
+	if el.prev != nil {
 		el.prev.next = el.next
 	}
 
